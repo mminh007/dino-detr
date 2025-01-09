@@ -55,11 +55,15 @@ In order to encourage diversity in the Deformed Points, the feature channel is s
 Additionally, the relative position bias (between 7 and 9) encapsulates the relative position between all possible query-key pairs, enhancing the conventional Attention mechanism with spatial data.
 
 Thus, multi-head attention applies, where the input query, key, and value are derived via:
+
 $$
     q = xW_q \qquad \tilde{k} = \tilde{x}W_k \qquad \tilde{v} = \tilde{x}W_v
 $$
+
 Self-attention applies the following equation, where B indicates Deformable relative position bias:
+
 $$
     z_{(m)} = Softmax(q^{(m)} \tilde{k}^{(m)^T} / \sqrt{d} + \phi (\tilde{B}, R))\tilde{v}^{(m)}
 $$
+
 Deformable multi-head atten-tion (DMHA) has similar computational costs, such as PVT and Swin Transformer. The difference is the computational complexity of the offset network.
