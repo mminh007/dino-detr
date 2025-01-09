@@ -11,7 +11,7 @@ However, an Attention range constructed manually, such as the Swin Transformer, 
 
 ### Deformable Attention module
 <div style = "text-align:center";>
-<img src="./docs/images/De-attn-module/de-attn.png", alt="Deformable Attention Module" >
+<img src="./images/De-attn-module/de-attn.png", alt="Deformable Attention Module" >
 </div>
 &nbsp;
 
@@ -43,23 +43,23 @@ and in order to ensure a stable learning process, a predefined value $s$ is empl
 ### Offset network in brief (subnetwork)
 In this subnetwork, the offset value is calculated for each reference point using a query. since the input image $x$ undergoes a linear transformation to obtain the query $(q)$, which is then inputted into the offset network. a subnet with two convolution modules with nonlinear activation functions is implemented.
 
-First a $k*k$ (5 × 5 in the paper) depthwise convolution is used to acquire local features. Then the offset network utilizes the $GeLU$ function between two convolutions. The convolution’s kernel in the **DW convolution** convolves spatial information.
+First a $k \times k$ (5 × 5 in the paper) depthwise convolution is used to acquire local features. Then the offset network utilizes the $GeLU$ function between two convolutions. The convolution’s kernel in the **DW convolution** convolves spatial information.
 
-Then a **1x1 convolution** that convolves in the channel direction compresses to 2 channels (horizontal, vertical). The feature map stores the vertical and horizontal distance values corresponding to each reference point.
+Then a $1 \times 1$ **convolution** that convolves in the channel direction compresses to 2 channels (horizontal, vertical). The feature map stores the vertical and horizontal distance values corresponding to each reference point.
 
 ### Keys and Values
-Translate the reference point using the values ​​determined by the offset network. Determine the value of the reference point to which it is moved by **bilinear interpolation** (to deal with floating numbers). Feature map using reference point determined values $x（Hg*Wg*C)$ and create $x$ Then linearly transform from to key and value.
+Translate the reference point using the values ​​determined by the offset network. Determine the value of the reference point to which it is moved by **bilinear interpolation** (to deal with floating numbers). Feature map using reference point determined values $x（Hg \times Wg \times C)$ and create $x$ Then linearly transform from to key and value.
 
 In order to encourage diversity in the Deformed Points, the feature channel is split into G groups, a strategy reminiscent of the Multi-Head Self-Attention (MHSA) technique. Feature subsets within each group exploit a shared subnetwork to produce correlated offsets. Practically, the Multi-Head Attention units’ count is made G times the number of offset groups, ensuring that every transformed group of key and value tokens is assigned multiple Attention Heads.
 
 Additionally, the relative position bias (between 7 and 9) encapsulates the relative position between all possible query-key pairs, enhancing the conventional Attention mechanism with spatial data.
 
 Thus, multi-head attention applies, where the input query, key, and value are derived via:
-    $$
+$$
     q = xW_q \qquad \tilde{k} = \tilde{x}W_k \qquad \tilde{v} = \tilde{x}W_v
-    $$
+$$
 Self-attention applies the following equation, where B indicates Deformable relative position bias:
-    $$
+$$
     z_{(m)} = Softmax(q^{(m)} \tilde{k}^{(m)^T} / \sqrt{d} + \phi (\tilde{B}, R))\tilde{v}^{(m)}
-    $$
+$$
 Deformable multi-head atten-tion (DMHA) has similar computational costs, such as PVT and Swin Transformer. The difference is the computational complexity of the offset network.

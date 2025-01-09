@@ -18,6 +18,8 @@ The combination of DAB and DN makes DETR-like models competitive with classical 
 
 Specifically, by improving the denoising training, query initialization, and box prediction, authors design a new DETR-like model based on DN-DETR, DAB-DETR, and Deformable DETR, and named **DINO**(**D**ETR with **I**mproved de**N**oising anch**O**r box). DINO demonstrates a great scalability, setting a new record of 63.3 AP on the COCO test-dev leaderboard.
 
+---
+
 ## Overview
 
 As a DETR-like model, DINO contains:
@@ -41,6 +43,8 @@ Authors also adopt **deformable attention** for its computational efficiency. Mo
 3. To leverage the refined box information from later layers to help optimize the parameters of their adjacent early layers, **authors propose a new look forward twice** scheme to correct the updated parameters with gradients from later layers.
    &nbsp;
 
+---
+
 ## Model Overview
 
 Following DAB-DETR and DN-DETR, DINO formulates the positional queries as dynamic anchor boxes and is trained with an extra DN loss. Note that DNDETR also adopts several techniques from Deformable DETR to achieve a better performance, including its deformable attention mechanism and “look forward once" implementation in layer parameter update. DINO further adopts the query selection idea from Deformable DETR to better initialize the positional queries. Built upon this strong baseline, _DINO introduces three novel methods to further improve the detection performance_.
@@ -61,6 +65,8 @@ As a DETR-like model, DINO is an end-to-end architecture. The overall pipeline i
   &nbsp;
 
 - To fully leverage the refined box information from later layers to help optimize the parameters of their adjacent early layer, a novel look forward twice method is proposed to pass gradients between adjacent layers.
+
+---
 
 #### Contrastive Denoising Training
 
@@ -100,6 +106,8 @@ where
 - $\|b_0 - a_0\|_1$ is the $l_1$ distance between $b_i$ and $a_1$
 - $topK($ **x** $, k)$ is a function that returns the set of $k$ largest elements in **x**.
 
+---
+
 #### Mixed Query Selection
 
 <div style = "text-align:center";>
@@ -113,6 +121,7 @@ where
 &nbsp;
 3. The dynamic 4D anchor box formulation of queries in our model makes it closely related to decoder positional queries, which can be improved by query selection. **We follow the above practice and propose a mixed query selection approach. we only initialize anchor boxes using the position information associated with the selected top-K features, but leave the content queries static as before**. Note that Deformable DETR utilizes the top-K features to enhance both the positional queries and the content queries. As the selected features are preliminary content features without further refinement, they could be ambiguous and misleading to the decoder. For example, a selected feature may contain multiple objects or be only part of an object. In contrast, our mixed query selection approach only enhances the positional queries with top-K selected features and keeps the content queries learnable as before. It helps the model to use better positional information to pool more comprehensive content features from the encoder.
 
+---
 
 #### Look Forward Twice
 
